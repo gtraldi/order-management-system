@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container mt-4">
+    <h1>Criar Novo Pedido</h1>
+
+    <form method="POST" action="{{ url_for('criar_pedido') }}" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="produto_id" class="form-label">Produto</label>
+            <select name="produto_id" id="produto_id" class="form-select" onchange="atualizarPrecoUnitario()" required>
+                <option value="" disabled selected>Selecione um produto</option>
+                {% for produto in produtos %}
+                    <option value="{{ produto.ProdutoID }}" 
+                            data-preco="{{ produto.Preco }}">
+                        {{ produto.Nome }}
+                    </option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">Por favor, selecione um produto.</div>
+        </div>
+        <div class="mb-3">
+            <label for="valor_unitario" class="form-label">Valor Unitário</label>
+            <p id="valor_unitario" class="form-control-plaintext">R$ 0,00</p>
+        </div>
+        <div class="mb-3">
+            <label for="quantidade" class="form-label">Quantidade</label>
+            <input type="number" id="quantidade" name="quantidade" class="form-control" min="1" required onchange="atualizarPrecoTotal()">
+            <div class="invalid-feedback">Por favor, insira uma quantidade válida.</div>
+        </div>
+        <div class="mb-3">
+            <label for="preco_total" class="form-label">Preço Total</label>
+            <input type="text" id="preco_total" class="form-control" readonly>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Criar Pedido</button>
+    </form>
+</div>
+
+<script>
+    function atualizarPrecoUnitario() {
+        var produtoSelect = document.getElementById('produto_id');
+        var selectedOption = produtoSelect.options[produtoSelect.selectedIndex];
+        
+        var precoUnitario = parseFloat(selectedOption.getAttribute('data-preco'));
+        
+        document.getElementById('valor_unitario').textContent = "R$ " + precoUnitario.toFixed(2);
+
+        atualizarPrecoTotal();
+    }
+    function atualizarPrecoTotal() {
+        var precoUnitario = parseFloat(document.getElementById('valor_unitario').textContent.replace('R$ ', '').replace(',', '.'));
+        var quantidade = parseInt(document.getElementById('quantidade').value);
+
+        if (!isNaN(precoUnitario) && !isNaN(quantidade) && quantidade > 0) {
+            var precoTotal = precoUnitario * quantidade;
+            document.getElementById('preco_total').value = precoTotal.toFixed(2);
+        } else {
+            document.getElementById('preco_total').value = '0.00';
+        }
+    }
+
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+{% endblock conteudo %}

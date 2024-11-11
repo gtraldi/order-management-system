@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container mt-4">
+
+    <h1>Editar Pedido #{{ pedido.PedidoID }}</h1>
+
+    <form method="POST" action="{{ url_for('editar_pedido', pedido_id=pedido.PedidoID) }}" class="needs-validation" novalidate>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="produto_id" class="form-label">Produto</label>
+                <select name="produto_id" id="produto_id" class="form-select" required>
+                    <option value="" disabled>Selecione um produto</option>
+                    {% for produto in produtos %}
+                    <option value="{{ produto.ProdutoID }}" 
+                            {% if produto.ProdutoID == pedido.itens_do_pedido[0].ProdutoID %}
+                                selected
+                            {% endif %}>
+                        {{ produto.Nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Por favor, selecione um produto.</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="quantidade" class="form-label">Quantidade</label>
+                <input type="number" name="quantidade" id="quantidade" class="form-control" min="1" value="{{ pedido.itens_do_pedido[0].Quantidade }}" required>
+                <div class="invalid-feedback">Por favor, insira uma quantidade válida.</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="preco_unitario" class="form-label">Preço Unitário</label>
+                <input type="text" class="form-control" value="R$ {{ '{:,.2f}'.format(pedido.itens_do_pedido[0].PrecoUnitario) }}" disabled>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="valor_total" class="form-label">Valor Total</label>
+                <input type="text" class="form-control" id="valor_total" value="R$ {{ '{:,.2f}'.format(pedido.ValorCompra) }}" disabled>
+            </div>
+
+            {% if usuario_especifico %}
+            <div class="col-md-6 mb-3">
+                <label for="status_pedido" class="form-label">Status do Pedido</label>
+                <select name="status_pedido" id="status_pedido" class="form-select" required>
+                    <option value="Em andamento" {% if pedido.StatusPedido == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                    <option value="Concluído" {% if pedido.StatusPedido == 'Concluído' %}selected{% endif %}>Concluído</option>
+                    <option value="Cancelado" {% if pedido.StatusPedido == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                </select>
+                <div class="invalid-feedback">Por favor, selecione o status do pedido.</div>
+            </div>
+            {% endif %}
+
+            <div class="col-md-12 mb-3">
+                <label for="observacao" class="form-label">Observações</label>
+                <textarea name="observacao" id="observacao" class="form-control" rows="3">{{ pedido.Observacao }}</textarea>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+{% endblock conteudo %}

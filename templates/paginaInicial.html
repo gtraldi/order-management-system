@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container mt-4">
+
+    <h1 class="mb-4">Dashboard de Gerenciamento de Pedidos</h1>
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-header">
+                    <h5 class="card-title">Pedidos Recentes</h5>
+                </div>
+                <div class="card-body">
+                    <h3>{{ pedidos_recentem }}</h3>
+                    <p class="card-text">Pedidos no último mês</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-header">
+                    <h5 class="card-title">Clientes Ativos</h5>
+                </div>
+                <div class="card-body">
+                    <h3>{{ num_clientes }}</h3>
+                    <p class="card-text">Clientes registrados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-header">
+                    <h5 class="card-title">Produtos Disponíveis</h5>
+                </div>
+                <div class="card-body">
+                    <h3>{{ num_produtos }}</h3>
+                    <p class="card-text">Produtos cadastrados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-white bg-success">
+                <div class="card-header">
+                    <h5 class="card-title">Vendas Totais</h5>
+                </div>
+                <div class="card-body">
+                    <h3 id="vendasTotais">R$ {{ '{:,.2f}'.format(vendas_totais) }}</h3>
+                    <p class="card-text">Vendas no último mês</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Pedidos Recentes</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID do Pedido</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Valor</th>
+                        <th>Itens</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr data-valor="{{ pedido.ValorCompra }}">
+                        <td>#{{ pedido.PedidoID }}</td>
+                        <td>{{ pedido.DataPedido.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if pedido.StatusPedido == 'Concluído' %}
+                            <span class="badge bg-success">Concluído</span>
+                            {% elif pedido.StatusPedido == 'Em andamento' %}
+                            <span class="badge bg-warning">Em andamento</span>
+                            {% else %}
+                            <span class="badge bg-danger">Cancelado</span>
+                            {% endif %}
+                        </td>
+                        <td class="valor-compra">R$ {{ '{:,.2f}'.format(pedido.ValorCompra) }}</td>
+                        <td>
+                            {% for item in pedido.itens_do_pedido %}
+                                {{ item.produto.Nome }} ({{ item.Quantidade }} x R$ {{ '{:,.2f}'.format(item.PrecoUnitario) }})
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('editar_pedido', pedido_id=pedido.PedidoID) }}" class="btn btn-sm btn-warning" title="Editar Pedido">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmarExclusaoModal" data-pedido-id="{{ pedido.PedidoID }}">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="confirmarExclusaoModal" tabindex="-1" aria-labelledby="confirmarExclusaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarExclusaoModalLabel">Confirmação de Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza de que deseja excluir este pedido? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a id="confirmExcluirButton" href="#" class="btn btn-danger">Excluir</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const confirmarExclusaoModal = document.getElementById('confirmarExclusaoModal');
+        confirmarExclusaoModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const pedidoId = button.getAttribute('data-pedido-id');
+            const confirmExcluirButton = document.getElementById('confirmExcluirButton');
+            confirmExcluirButton.setAttribute('href', '/excluir_pedido/' + pedidoId);
+        });
+        function atualizarVendasTotais() {
+            let totalVendas = 0;
+
+            document.querySelectorAll(".valor-compra").forEach(function (elemento) {
+                const valor = parseFloat(elemento.textContent.replace("R$", "").replace(",", "").replace(".", "."));
+                totalVendas += isNaN(valor) ? 0 : valor;
+            });
+
+            document.getElementById("vendasTotais").textContent = "R$ " + totalVendas.toFixed(2).replace(".", ",");
+        }
+
+        atualizarVendasTotais();
+    });
+</script>
+{% endblock conteudo %}

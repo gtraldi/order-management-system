@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container mt-4">
+    <h1 class="mb-4">Produtos Disponíveis</h1>
+
+    <div class="row">
+        {% for produto in produtos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ produto.Nome }}</h5>
+                    <p class="card-text">{{ produto.Descricao }}</p>
+                    <h6 class="card-subtitle mb-2 text-muted">R$ {{ '{:,.2f}'.format(produto.Preco) }}</h6>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock conteudo %}

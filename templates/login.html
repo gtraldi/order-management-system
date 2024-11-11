@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="col-md-6">
+        <div id="popup" class="popup-container">
+            <div class="mb-3">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="alert-container">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div id="login-form" class="card p-4 shadow-sm">
+                <h2 class="text-center mb-4">Login</h2>
+                <form action="/" method="POST">
+                    <div class="mb-3">
+                        <label for="login-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="login-email" name="email" required placeholder="Digite seu email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="login-senha" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="login-senha" name="senha" required placeholder="Digite sua senha">
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    </div>
+                </form>
+                <div class="text-center">
+                    <span>Não tem uma conta? <a href="javascript:void(0)" onclick="toggleForms()">Cadastre-se</a></span>
+                </div>
+            </div>
+
+            <div id="cadastro-form" style="display: none;" class="card p-4 shadow-sm">
+                <h2 class="text-center mb-4">Cadastro</h2>
+                <form action="/cadastro" method="POST">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="nome" name="nome" required placeholder="Digite seu nome">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cadastro-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="cadastro-email" name="email" required placeholder="Digite seu email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" id="telefone" name="telefone" required placeholder="Digite seu telefone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endereco" class="form-label">Endereço</label>
+                        <input type="text" class="form-control" id="endereco" name="endereco" required placeholder="Digite seu endereço">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cadastro-senha" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="cadastro-senha" name="senha" required placeholder="Crie uma senha">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmar-senha" class="form-label">Confirmar Senha</label>
+                        <input type="password" class="form-control" id="confirmar-senha" name="confirmar_senha" required placeholder="Confirme sua senha">
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+                    </div>
+                </form>
+                <div class="text-center">
+                    <span>Já tem uma conta? <a href="javascript:void(0)" onclick="toggleForms()">Faça login</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleForms() {
+        const loginForm = document.getElementById('login-form');
+        const cadastroForm = document.getElementById('cadastro-form');
+
+        if (loginForm.style.display === 'none') {
+            loginForm.style.display = 'block';
+            cadastroForm.style.display = 'none';
+        } else {
+            loginForm.style.display = 'none';
+            cadastroForm.style.display = 'block';
+        }
+    }
+
+    window.onload = function() {
+        document.getElementById('popup').classList.add('active');
+    };
+</script>
+
+{% endblock conteudo %}
