@@ -4,7 +4,6 @@ metadata:
   name: order-management-system
   annotations:
     github.com/project-slug: gtraldi/order-management-system
-    backstage.io/techdocs-ref: dir:.
 spec:
   type: other
   lifecycle: unknown
