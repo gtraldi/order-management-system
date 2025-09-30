@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: order-management-system
+  annotations:
+    github.com/project-slug: gtraldi/order-management-system
+spec:
+  type: other
+  lifecycle: unknown
+  owner: admins
